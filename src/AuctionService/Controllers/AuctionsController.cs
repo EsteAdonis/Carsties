@@ -1,4 +1,5 @@
 using System.Reflection.Metadata.Ecma335;
+using AutoMapper.QueryableExtensions;
 
 namespace AuctionService.Controllers;
 
@@ -10,18 +11,15 @@ public class AuctionsController(AuctionDbContext context, IMapper mapper) : Cont
 	private readonly IMapper _mapper = mapper;
 
 	[HttpGet]
-	public async Task<ActionResult<List<AuctionDto>>> GetAllAuctions()
+	public async Task<ActionResult<List<AuctionDto>>> GetAllAuctions(string date)
 	{
-		var auctions = await _context.Auctions
-					.Include(i => i.Item)
-					.OrderBy(i => i.Item.Make)
-					.ToListAsync();
-
-		if (auctions == null || auctions.Count == 0)
+		var query = _context.Auctions.OrderBy(x => x.Item.Make).AsQueryable();
+		if (!string.IsNullOrEmpty(date))
 		{
-			return NotFound("No auctions found.");
-		}
-		return _mapper.Map<List<AuctionDto>>(auctions);
+			query = query.Where(x => x.UpdatedAt.CompareTo(DateTime.Parse(date).ToUniversalTime()) > 0);
+		};
+
+		return await query.ProjectTo<AuctionDto>(_mapper.ConfigurationProvider).ToListAsync();
 	}
 
 	[HttpGet("{id}")]
