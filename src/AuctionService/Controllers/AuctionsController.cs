@@ -5,10 +5,13 @@ namespace AuctionService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuctionsController(AuctionDbContext context, IMapper mapper) : ControllerBase
+public class AuctionsController(AuctionDbContext context,
+																IMapper mapper,
+																IPublishEndpoint publishEndpoint) : ControllerBase
 {
 	private readonly AuctionDbContext _context = context;
 	private readonly IMapper _mapper = mapper;
+	private readonly IPublishEndpoint _publishEndpoint = publishEndpoint;
 
 	[HttpGet]
 	public async Task<ActionResult<List<AuctionDto>>> GetAllAuctions(string date)
@@ -45,11 +48,15 @@ public class AuctionsController(AuctionDbContext context, IMapper mapper) : Cont
 
 		_context.Auctions.Add(auction);
 
-		var result = await _context.SaveChangesAsync() > 0;
+		var newAuction = _mapper.Map<AuctionDto>(auction);
+
+		await _publishEndpoint.Publish(_mapper.Map<AuctionCreated>(newAuction));
+
+		var result = await _context.SaveChangesAsync() > 0;		
 
 		if (!result) return BadRequest("Could not save changes to the DB");
 
-		return CreatedAtAction(nameof(GetAuctionById), new { auction.Id }, _mapper.Map<AuctionDto>(auction));
+		return CreatedAtAction(nameof(GetAuctionById), new { auction.Id }, newAuction);
 	}
 
 	[HttpPut("{id}")]
@@ -69,6 +76,8 @@ public class AuctionsController(AuctionDbContext context, IMapper mapper) : Cont
 		auction.Item.Mileage = updateAuctionDto.Mileage ?? auction.Item.Mileage;
 		auction.Item.Year = updateAuctionDto.Year ?? auction.Item.Year;
 
+		await _publishEndpoint.Publish(_mapper.Map<AuctionUpdated>(auction));
+
 		var result = await _context.SaveChangesAsync() > 0;
 
 		if (result) return Ok();
@@ -85,6 +94,8 @@ public class AuctionsController(AuctionDbContext context, IMapper mapper) : Cont
 
 		// TODO: check seller == username
 		_context.Auctions.Remove(auction);
+
+		await _publishEndpoint.Publish<AuctionDeleted>(new { id = auction.Id.ToString() });
 
 		var result = await _context.SaveChangesAsync() > 0;
 

@@ -8,4 +8,7 @@ global using AuctionService.DTOs;
 global using AuctionService.Entities;
 global using AutoMapper;
 global using Microsoft.EntityFrameworkCore;
-global using System.Linq.Expressions;
+global using MassTransit;
+global using Contracts;
+
+// global using System.Linq.Expressions;
