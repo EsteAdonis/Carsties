@@ -1,5 +1,6 @@
 using System.Reflection.Metadata.Ecma335;
 using AutoMapper.QueryableExtensions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AuctionService.Controllers;
 
@@ -39,12 +40,13 @@ public class AuctionsController(AuctionDbContext context,
 		return _mapper.Map<AuctionDto>(auction);
 	}
 
+	[Authorize]
 	[HttpPost]
 	public async Task<ActionResult<AuctionDto>> CreateAuction(CreateAuctionDto auctionDto)
 	{
 		var auction = _mapper.Map<Auction>(auctionDto);
 		// TODO: add current user as sellect
-		auction.Seller = "test";
+		auction.Seller = User.Identity.Name;
 
 		_context.Auctions.Add(auction);
 
@@ -59,6 +61,7 @@ public class AuctionsController(AuctionDbContext context,
 		return CreatedAtAction(nameof(GetAuctionById), new { auction.Id }, newAuction);
 	}
 
+	[Authorize]
 	[HttpPut("{id}")]
 	public async Task<ActionResult<AuctionDto>> UpdateAuction(Guid id, UpdateAuctionDto updateAuctionDto)
 	{
@@ -68,7 +71,7 @@ public class AuctionsController(AuctionDbContext context,
 
 		if (auction == null) return NotFound();
 
-		//TODO: check sellect == username
+		if (auction.Seller != User.Identity.Name) return Forbid();
 
 		auction.Item.Make = updateAuctionDto.Make ?? auction.Item.Make;
 		auction.Item.Model = updateAuctionDto.Model ?? auction.Item.Model;
@@ -92,7 +95,8 @@ public class AuctionsController(AuctionDbContext context,
 
 		if (auction == null) return NotFound();
 
-		// TODO: check seller == username
+		if (auction.Seller != User.Identity.Name) return Forbid();
+		
 		_context.Auctions.Remove(auction);
 
 		await _publishEndpoint.Publish<AuctionDeleted>(new { id = auction.Id.ToString() });
