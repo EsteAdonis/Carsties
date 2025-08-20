@@ -1,5 +1,3 @@
-
-
 using AuctionService.Consumers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
