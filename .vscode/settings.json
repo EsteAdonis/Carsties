@@ -16,4 +16,5 @@
   "terminal.integrated.mouseWheelZoom": true,
   "terminal.integrated.mouseWheelScrollSensitivity": 6,
 	"terminal.integrated.fontSize": 15,
+	"editor.linkedEditing": true,
 }
