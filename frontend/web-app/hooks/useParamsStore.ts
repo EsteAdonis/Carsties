@@ -6,6 +6,7 @@ type State = {
 	pageCount: number;
 	searchTerm: string;
 	orderBy: string;
+	filterBy: string;
 }
 
 // Partial<T> in TypeScript is a utility type that takes an object type T 
@@ -20,7 +21,8 @@ const initialState: State = {
 	pageSize: 12,
 	pageCount: 1,
 	searchTerm: '',
-	orderBy: 'make'
+	orderBy: 'make',
+	filterBy: 'live'
 }
 
 export const useParamsStore = create<State & Actions>((set) => ({
