@@ -1,7 +1,6 @@
 import { useParamsStore } from "@/hooks/useParamsStore";
 import { Button, ButtonGroup } from "flowbite-react";
 
-
 const pageSizeButtons = [4, 8, 12];
 
 export default function Filters() {

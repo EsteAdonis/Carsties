@@ -7,6 +7,8 @@ type State = {
 	searchTerm: string;
 }
 
+// Partial<T> in TypeScript is a utility type that takes an object type T 
+// and creates a new type where all the properties of T are optional. 
 type Actions = {
 	setParams: (params: Partial<State>) => void;
 	reset: () => void;
@@ -21,7 +23,7 @@ const initialState: State = {
 
 export const useParamsStore = create<State & Actions>((set) => ({
 	...initialState,
-	
+
 	setParams: (newParams: Partial<State>) => {
 		set((state) => {
 			if (newParams.pageNumber) {
