@@ -9,3 +9,6 @@
 
 # zustand  -- state management
 # https://zustand.docs.pmnd.rs/getting-started/introduction
+
+-- Auth js
+-- https://authjs.dev/getting-started
