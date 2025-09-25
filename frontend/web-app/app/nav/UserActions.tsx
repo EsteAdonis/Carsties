@@ -11,10 +11,6 @@ type Props = {
 }
 
 export default function UserActions({ user }: Props) {
-	function singOut(arg0: { redirectTo: string; }): void {
-		throw new Error("Function not implemented.");
-	}
-
 	return (
 		<Dropdown inline label={`Welcome ${user.name}`} className="cursor-pointer">
 			<DropdownItem icon={HiUser}>
@@ -24,7 +20,9 @@ export default function UserActions({ user }: Props) {
 				Actions won
 			</DropdownItem>
 			<DropdownItem icon={AiFillCar}>
-				Sell my car
+				<Link href='/acutions/create'>
+					Sell my car				
+				</Link>
 			</DropdownItem>
 			<DropdownItem icon={HiCog}>
 				<Link href='/session'>
