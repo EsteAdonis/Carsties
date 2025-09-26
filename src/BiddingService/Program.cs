@@ -34,14 +34,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 		opt.TokenValidationParameters.NameClaimType = "username";
 	});
 
-
-
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-
-
 // app.UseHttpsRedirection();
 
 app.UseAuthorization();
