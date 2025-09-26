@@ -6,6 +6,7 @@ import CarImage from '../../CarImage';
 import DetailedSpecs from './DetailedSpecs';
 import EditButton from './Editbutton';
 import getCurrentUser from '@/app/actions/authActions';
+import DeleteButton from './DeleteButton';
 
 export default async function details({params}: {params: Promise<{id: string}>}) {
 	const {id} = await params;
@@ -18,7 +19,10 @@ export default async function details({params}: {params: Promise<{id: string}>})
 				<div>
 					<Heading title={`${data.make} ${data.model}`} />
 					{user?.username === data.seller && (
-						<EditButton id={data.id} />
+						<>
+							<EditButton id={data.id} />
+							<DeleteButton id={data.id} />						
+						</>
 					)}
 					<EditButton id={data.id} />
 				</div>
