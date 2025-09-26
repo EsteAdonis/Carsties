@@ -6,26 +6,47 @@ import { FieldValues, useForm } from "react-hook-form";
 import Input from "../components/input";
 import { useEffect } from "react";
 import DateInput from "../components/DateInput";
-import { createAuction } from '../actions/auctionActions';
+import { createAuction, updateAuction } from '../actions/auctionActions';
 import { toast } from 'react-hot-toast';
+import { Auction } from "@/types";
+import { usePathname } from "next/navigation";
 
-export default function AuctionForm() {
+type Props = {
+	auction?: Auction
+}
+
+export default function AuctionForm({auction}:Props) {
 	const router = useRouter();
-	const {control, handleSubmit, setFocus, formState: {isSubmitting, isValid, isDirty}} = useForm({
+	const pathname = usePathname();
+	const {control, handleSubmit, setFocus, reset, formState: {isSubmitting, isValid, isDirty}} = useForm({
 		mode: 'onTouched'
 	});
 
 	useEffect(()=>{
+		if (auction) {
+			const {make, model, color, mileage, year} = auction;
+			reset({make, model, color, mileage, year})
+		}
 		setFocus('make')
-	}, [setFocus])
+	}, [setFocus, auction, reset])
 
 	async function onSubmit(data: FieldValues) {
 		try {
-			const res = await createAuction(data);
+			let id = '';
+			let res;
+			if (pathname === '/auctions/create') {
+				res = await createAuction(data);
+				id = res.id;
+			} else {
+				if (auction)	 {
+					res = await updateAuction(data, auction.id);
+					id = auction.id;
+				}
+			}
 			if (res.error) {
 				throw new Error(res.error);
 			}
-			router.push(`/autions/details/${res.id}`);
+			router.push(`/autions/details/${id}`);
 		} catch(error: any) {
 			toast.error(error.status + ' ' + error.message)
 		}
@@ -42,26 +63,31 @@ export default function AuctionForm() {
 				<Input name='mileage' label='Mileage' control={control} rules={{required: 'Milage is required'}} />	
 			</div>
 
-			<Input name="imageUrl" label="Image URL" control={control} rules={{required: 'Image URL is required'}} />
+			{pathname === '/auctions/create' && 
+			<>
+				<Input name="imageUrl" label="Image URL" control={control} rules={{required: 'Image URL is required'}} />
 
-			<div className="grid grid-cols-2 gap-3">
-				<Input 
-					name='reservePrice' 
-					label='Reserve Price (enter 0 if no reserve)' 
-					type="number" 
-					control={control} 
-					rules={{required: 'Price is required'}}
-				/>
-				<DateInput
-					name='auctionEnd' 
-					type='datetime-local'
-					label='Auction end date/time' 
-					control={control} 
-					showTimeSelect
-					dateFormat='dd MMMM yyyy h:mm a'
-					rules={{required: 'Auction is required'}} 
-				/>	
-			</div>
+				<div className="grid grid-cols-2 gap-3">
+					<Input 
+						name='reservePrice' 
+						label='Reserve Price (enter 0 if no reserve)' 
+						type="number" 
+						control={control} 
+						rules={{required: 'Price is required'}}
+					/>
+					<DateInput
+						name='auctionEnd' 
+						type='datetime-local'
+						label='Auction end date/time' 
+						control={control} 
+						showTimeSelect
+						dateFormat='dd MMMM yyyy h:mm a'
+						rules={{required: 'Auction is required'}} 
+					/>	
+				</div>				
+			</>			
+			}
+
 
 			<div className="flex justify-between">
 				<Button color='alternative' onClick={()=>router.push('/') }>Cancel</Button>

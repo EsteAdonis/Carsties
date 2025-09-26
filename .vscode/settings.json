@@ -15,6 +15,6 @@
   "editor.minimap.enabled": false,
   "terminal.integrated.mouseWheelZoom": true,
   "terminal.integrated.mouseWheelScrollSensitivity": 6,
-	"terminal.integrated.fontSize": 15,
+	"terminal.integrated.fontSize": 16,
 	"editor.linkedEditing": true,
 }

@@ -22,3 +22,7 @@ export async function createAuction(data: FieldValues) {
 export async function getDetailedViewdata(id: string): Promise<Auction> {
 	return fetchWrapper.get(`auctions/${id}`);
 }
+
+export async function updateAuction(data: FieldValues, id: string) {
+	return fetchWrapper.put(`auctions/${id}`, data);
+}
