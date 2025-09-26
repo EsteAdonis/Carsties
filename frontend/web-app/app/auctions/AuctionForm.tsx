@@ -8,7 +8,9 @@ import { useEffect } from "react";
 
 export default function AuctionForm() {
 	const router = useRouter();
-	const {control, handleSubmit, setFocus, formState: {isSubmitting, isValid, isDirty}} = useForm();
+	const {control, handleSubmit, setFocus, formState: {isSubmitting, isValid, isDirty}} = useForm({
+		mode: 'onTouched'
+	});
 
 	useEffect(()=>{
 		setFocus('make')
@@ -22,6 +24,28 @@ export default function AuctionForm() {
 		<form className="flex flex-col mt-3" onSubmit={handleSubmit(onSubmit)}>
 			<Input name='make' label='Make' control={control} rules={{required: 'Make is required'}} />
 			<Input name='model' label='model' control={control} rules={{required: 'Model is required'}} />
+			<Input name='color' label='color' control={control} rules={{required: 'Color is required'}} />			
+
+			<div className="grid grid-cols-2 gap-3">
+				<Input name='year' label='Year' type="number" control={control} rules={{required: 'Model is required'}} />
+				<Input name='mileage' label='Mileage' control={control} rules={{required: 'Milage is required'}} />	
+			</div>
+
+			<div className="grid grid-cols-2 gap-3">
+				<Input 
+					name='reservePrice' 
+					label='Reserve Price (enter 0 if no reserve)' 
+					type="number" 
+					control={control} 
+					rules={{required: 'Price is required'}}
+				/>
+				<Input 
+					name='auctionEnd' 
+					type='End'
+					label='Auction end date/time' 
+					control={control} 
+					rules={{required: 'Auction is required'}} />	
+			</div>
 
 			<div className="flex justify-between">
 				<Button color='alternative' onClick={()=>router.push('/') }>Cancel</Button>
